@@ -39,7 +39,7 @@ class MetaParser
             $meta['description'] = '';
         }
 
-        $title = $xpath->query('//title')->item(0)->textContent;
+        $title = $xpath->query('//title')->item(0)?->textContent;
         $meta['title'] = $title ?? $this->parseTitle();
         $this->meta = $meta;
 
@@ -50,7 +50,7 @@ class MetaParser
     {
 
         preg_match("/<title.*>(.*)<\/title>/siU", $this->html, $titleMatches);
-        return $titleMatches[1] ? strip_tags($titleMatches[1]) : '';
+        return !empty($titleMatches[1]) ? strip_tags($titleMatches[1]) : '';
     }
 
     public function titleWidth()

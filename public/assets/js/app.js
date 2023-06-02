@@ -4,6 +4,8 @@ const descriptionMaxWidth = document.getElementById('descriptionMaxWidth').inner
 
 
 document.getElementById('metaAction').addEventListener("click", metaAction);
+document.getElementById('metaForm').addEventListener("submit", metaAction);
+
 
 document.getElementById('resetForm').addEventListener("click", resetForm);
 
@@ -92,9 +94,6 @@ function googleSnippet(response) {
     snippet.getElementsByClassName("url")[0].textContent = response.data.url;
 
     document.getElementById('googleDescription').textContent = shortText(response.data.description.text, descriptionMaxLength);
-
-
-
 }
 
 function updateTable(url) {
@@ -112,7 +111,9 @@ function updateTable(url) {
     c2.innerHTML = `${date} ${time}`
 
     const rowCount = table.rows.length;
-    table.deleteRow(rowCount - 1);
+    if (rowCount > 10) {
+        table.deleteRow(rowCount - 1);
+    }
 }
 
 

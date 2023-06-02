@@ -32,6 +32,11 @@ class MetaController extends BaseController
         $data = json_decode($json, true);
 
         $url = $data['url'] ?? '';
+
+        if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+            $url = "http://" . $url;
+        }
+
         if (filter_var($url, FILTER_VALIDATE_URL)) {
             $data['host'] = parse_url($url, PHP_URL_HOST);
             try {
@@ -41,7 +46,7 @@ class MetaController extends BaseController
                 $metaParser = new MetaParser((string) $res->getBody());
                 $metaParser->parse();
                 $data = array_merge($metaParser->getCalculatedData(), $data);
-            
+
                 $log = Log::getInstance();
                 $log->write($url);
             } catch (ConnectException $e) {
