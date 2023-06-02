@@ -16,80 +16,60 @@ class MetaParser
 
     public function parse()
     {
+        $doc = $this->createDocument();
+        $xpath = $this->createXPath($doc);
+        $this->parseDescription($xpath);
+        $this->parseTitle($xpath);
+
+        return $this->meta;
+    }
+
+    private function createDocument(): \DOMDocument
+    {
         $doc = new \DOMDocument();
         libxml_use_internal_errors(true);
         $doc->loadHTML($this->html);
         libxml_clear_errors();
 
-        $xpath = new \DOMXPath($doc);
-        //$description = $xpath->query('/html/head/meta[@name="description"]/@content')->item(0)?->textContent;
+        return $doc;
+    }
+
+    private function createXPath(\DOMDocument $doc): \DOMXPath
+    {
+        return new \DOMXPath($doc);
+    }
+
+    private function parseDescription(\DOMXPath $xpath): void
+    {
         $nodes = $xpath->query('//head/meta');
+        $description = '';
 
         foreach ($nodes as $node) {
             if (preg_match('#description#si', $node->getAttribute('name'))) {
                 $description = $node->getAttribute('content');
+                break;
             }
         }
-        // $tags = get_meta_tags('http://interia.pl');
-        //var_dump($tags);
 
-        if (!empty($description)) {
-            $meta['description'] = strip_tags($description);
-        } else {
-            $meta['description'] = '';
-        }
-
-        $title = $xpath->query('//title')->item(0)?->textContent;
-        $meta['title'] = $title ?? $this->parseTitle();
-        $this->meta = $meta;
-
-        return $meta;
+        $this->meta['description'] = !empty($description) ? strip_tags($description) : '';
     }
 
-    private function parseTitle(): string
+    private function parseTitle(\DOMXPath $xpath): void
     {
+        $titleNode = $xpath->query('//title')->item(0);
+        $title = $titleNode?->textContent ?? $this->parseTitleFromHtml();
 
+        $this->meta['title'] = $title;
+    }
+
+    private function parseTitleFromHtml(): string
+    {
         preg_match("/<title.*>(.*)<\/title>/siU", $this->html, $titleMatches);
         return !empty($titleMatches[1]) ? strip_tags($titleMatches[1]) : '';
     }
 
-    public function titleWidth()
+    public function getMeta()
     {
-        $font = Config::get('FONT_TITLE');
-        return $this->calculateWidth($font, $this->meta['title']);
-    }
-
-    public function descriptionWidth()
-    {
-        $font = Config::get('FONT_DESCRIPTION');
-        return $this->calculateWidth($font, $this->meta['description']);
-    }
-
-    private function calculateWidth(array $font, string $text): int
-    {
-        $path = Config::get('FONT_PATH');
-        list($left,, $right) = imagettfbbox($font[1], 0, $path . $font[3], $text);
-        $width = $right - $left;
-        //var_dump(imagettfbbox($font[1], 0, $path . $font[3], $text));
-        return $width;
-    }
-
-
-    public function getCalculatedData(): array
-    {
-        $data = [];
-        $data['title'] = [
-            'text' => $this->meta['title'],
-            'titleLength' => mb_strlen($this->meta['title']),
-            'titleWidth' =>  $this->titleWidth(),
-        ];
-
-        $data['description'] = [
-            'text' => $this->meta['description'],
-            'descriptionLength' => mb_strlen($this->meta['description']),
-            'descriptionWidth' => $this->descriptionWidth(),
-        ];
-
-        return $data;
+        return $this->meta;
     }
 }

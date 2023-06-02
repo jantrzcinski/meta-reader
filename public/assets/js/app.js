@@ -44,13 +44,14 @@ function hideLoading() {
 }
 
 function metaFill(response) {
+    console.log(response);
     const titleLength = document.getElementById('titleLength');
     const titleWidth = document.getElementById('titleWidth');
     document.getElementById('titleField').value = response.data.title.text;
-    titleLength.innerHTML = response.data.title.titleLength;
+    titleLength.innerHTML = response.data.title.length;
 
-    document.getElementById('titleWidth').innerHTML = response.data.title.titleWidth;
-    if (response.data.title.titleWidth > titleMaxWidth) {
+    document.getElementById('titleWidth').innerHTML = response.data.title.width;
+    if (response.data.title.width > titleMaxWidth) {
         titleWidth.classList.add('text-danger');
     } else {
         titleWidth.classList.remove('text-danger');
@@ -61,16 +62,16 @@ function metaFill(response) {
     const descriptionLength = document.getElementById('descriptionLength');
     const descriptionWidth = document.getElementById('descriptionWidth');
 
-    descriptionLength.innerHTML = response.data.description.descriptionLength;
-    descriptionWidth.innerHTML = response.data.description.descriptionWidth;
+    descriptionLength.innerHTML = response.data.description.length;
+    descriptionWidth.innerHTML = response.data.description.width;
 
-    if (response.data.description.descriptionLength > descriptionMaxLength) {
+    if (response.data.description.length > descriptionMaxLength) {
         descriptionLength.classList.add('text-danger');
     } else {
         descriptionLength.classList.remove('text-danger');
     }
 
-    if (response.data.description.descriptionWidth > descriptionMaxWidth) {
+    if (response.data.description.length > descriptionMaxWidth) {
         descriptionWidth.classList.add('text-danger');
     } else {
         descriptionWidth.classList.remove('text-danger');
@@ -141,7 +142,6 @@ function metaAction(e) {
         })
         .then(function (response) {
             hideLoading();
-            console.log(response);
 
             if (response.error.length === 0) {
                 metaFill(response);

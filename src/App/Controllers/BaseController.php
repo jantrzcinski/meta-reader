@@ -17,4 +17,10 @@ abstract class BaseController
 
         include dirname(__FILE__) . '/../Views/' . $file . '.php';
     }
+
+    public function sendJsonResponse(array $data): void
+    {
+        header('Content-Type: application/json');
+        echo json_encode($data);
+    }
 }

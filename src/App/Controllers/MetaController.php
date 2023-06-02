@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Lib\MetaParser;
+use App\Lib\MetaAnalyzer;
 use App\Lib\Config;
 use App\Lib\Log;
 use GuzzleHttp\Exception\ConnectException;
@@ -45,7 +46,9 @@ class MetaController extends BaseController
 
                 $metaParser = new MetaParser((string) $res->getBody());
                 $metaParser->parse();
-                $data = array_merge($metaParser->getCalculatedData(), $data);
+
+                $metaAnalyzer = new MetaAnalyzer($metaParser->getMeta());
+                $data = array_merge($metaAnalyzer->getCalculatedData(), $data);
 
                 $log = Log::getInstance();
                 $log->write($url);
@@ -56,6 +59,7 @@ class MetaController extends BaseController
             $error[] =  "$url is not a valid URL";
         }
 
-        echo json_encode(['data' => $data, 'error' => $error]);
+        $response = ['data' => $data, 'error' => $error];
+        $this->sendJsonResponse($response);
     }
 }
