@@ -71,7 +71,7 @@ function metaFill(response) {
         descriptionLength.classList.remove('text-danger');
     }
 
-    if (response.data.description.length > descriptionMaxWidth) {
+    if (response.data.description.width > descriptionMaxWidth) {
         descriptionWidth.classList.add('text-danger');
     } else {
         descriptionWidth.classList.remove('text-danger');
