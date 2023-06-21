@@ -30,16 +30,16 @@ class MetaController extends BaseController
         $error = [];
 
         $json = file_get_contents("php://input"); // json string
-        $data = json_decode($json, true);
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
         $url = $data['url'] ?? '';
 
-        if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+        if (!preg_match("~^(?:f|ht)tps?://~i", (string) $url)) {
             $url = "http://" . $url;
         }
 
         if (filter_var($url, FILTER_VALIDATE_URL)) {
-            $data['host'] = parse_url($url, PHP_URL_HOST);
+            $data['host'] = parse_url((string) $url, PHP_URL_HOST);
             try {
                 $client = new \GuzzleHttp\Client(['verify' => false]);
                 $res = $client->request('GET', $url);

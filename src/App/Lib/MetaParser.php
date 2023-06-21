@@ -8,7 +8,7 @@ use App\Lib\Config;
 
 class MetaParser
 {
-    private $meta;
+    private ?array $meta = null;
 
     public function __construct(public string $html)
     {
@@ -45,13 +45,13 @@ class MetaParser
         $description = '';
 
         foreach ($nodes as $node) {
-            if (preg_match('#description#si', $node->getAttribute('name'))) {
+            if (preg_match('#description#si', (string) $node->getAttribute('name'))) {
                 $description = $node->getAttribute('content');
                 break;
             }
         }
 
-        $this->meta['description'] = !empty($description) ? strip_tags($description) : '';
+        $this->meta['description'] = empty($description) ? '' : trim(strip_tags((string) $description));
     }
 
     private function parseTitle(\DOMXPath $xpath): void
@@ -59,13 +59,13 @@ class MetaParser
         $titleNode = $xpath->query('//title')->item(0);
         $title = $titleNode?->textContent ?? $this->parseTitleFromHtml();
 
-        $this->meta['title'] = $title;
+        $this->meta['title'] = trim($title);
     }
 
     private function parseTitleFromHtml(): string
     {
         preg_match("/<title.*>(.*)<\/title>/siU", $this->html, $titleMatches);
-        return !empty($titleMatches[1]) ? strip_tags($titleMatches[1]) : '';
+        return empty($titleMatches[1]) ? '' : strip_tags($titleMatches[1]);
     }
 
     public function getMeta()

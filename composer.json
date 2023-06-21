@@ -14,5 +14,8 @@
     "minimum-stability": "dev",
     "require": {
         "guzzlehttp/guzzle": "7.7.x-dev"
+    },
+    "require-dev": {
+        "rector/rector": "^0.17.1"
     }
 }

@@ -6,7 +6,6 @@ const descriptionMaxWidth = document.getElementById('descriptionMaxWidth').inner
 document.getElementById('metaAction').addEventListener("click", metaAction);
 document.getElementById('metaForm').addEventListener("submit", metaAction);
 
-
 document.getElementById('resetForm').addEventListener("click", resetForm);
 
 function addAlert(message) {
@@ -14,25 +13,36 @@ function addAlert(message) {
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
     document.getElementById('alerts').innerHTML = document.getElementById('alerts').innerHTML + alert;
 }
+
+function resetElement(element) {
+    element.innerHTML = 0;
+    element.classList.remove('text-danger');
+}
+
+function getElements() {
+    return {
+        titleLength: document.getElementById('titleLength'),
+        titleWidth: document.getElementById('titleWidth'),
+        descriptionLength: document.getElementById('descriptionLength'),
+        descriptionWidth: document.getElementById('descriptionWidth')
+    };
+}
+
 function resetForm(e) {
     e.preventDefault();
     document.getElementById("metaForm").reset();
 
-    const titleLength = document.getElementById('titleLength');
-    const titleWidth = document.getElementById('titleWidth');
+    const {
+        titleLength,
+        titleWidth,
+        descriptionLength,
+        descriptionWidth
+    } = getElements();
 
-    const descriptionLength = document.getElementById('descriptionLength');
-    const descriptionWidth = document.getElementById('descriptionWidth');
-
-    titleLength.innerHTML = 0;
-    titleLength.classList.remove('text-danger');
-    titleWidth.innerHTML = 0;
-    titleWidth.classList.remove('text-danger');
-
-    descriptionLength.innerHTML = 0;
-    descriptionLength.classList.remove('text-danger');
-    descriptionWidth.innerHTML = 0;
-    descriptionWidth.classList.remove('text-danger');
+    resetElement(titleLength);
+    resetElement(titleWidth);
+    resetElement(descriptionLength);
+    resetElement(descriptionWidth);
 }
 
 function displayLoading() {
@@ -44,37 +54,36 @@ function hideLoading() {
 }
 
 function metaFill(response) {
-    console.log(response);
-    const titleLength = document.getElementById('titleLength');
-    const titleWidth = document.getElementById('titleWidth');
-    document.getElementById('titleField').value = response.data.title.text;
-    titleLength.innerHTML = response.data.title.length;
+    const {
+        title: { text: titleText, length: titleLength, width: titleWidth },
+        description: { text: descriptionText, length: descriptionLength, width: descriptionWidth }
+    } = response.data;
 
-    document.getElementById('titleWidth').innerHTML = response.data.title.width;
-    if (response.data.title.width > titleMaxWidth) {
-        titleWidth.classList.add('text-danger');
+    const setTitleField = document.getElementById('titleField');
+    const setDescriptionField = document.getElementById('descriptionField');
+    const titleLengthElement = document.getElementById('titleLength');
+    const titleWidthElement = document.getElementById('titleWidth');
+    const descriptionLengthElement = document.getElementById('descriptionLength');
+    const descriptionWidthElement = document.getElementById('descriptionWidth');
+
+    setTitleField.value = titleText;
+    titleLengthElement.innerHTML = titleLength;
+    titleWidthElement.innerHTML = titleWidth;
+
+    setDescriptionField.value = descriptionText;
+    descriptionLengthElement.innerHTML = descriptionLength;
+    descriptionWidthElement.innerHTML = descriptionWidth;
+
+    updateElementClass(titleWidthElement, titleWidth, titleMaxWidth);
+    updateElementClass(descriptionLengthElement, descriptionLength, descriptionMaxLength);
+    updateElementClass(descriptionWidthElement, descriptionWidth, descriptionMaxWidth);
+}
+
+function updateElementClass(element, value, maxValue) {
+    if (value > maxValue) {
+        element.classList.add('text-danger');
     } else {
-        titleWidth.classList.remove('text-danger');
-    }
-
-    document.getElementById('descriptionField').value = response.data.description.text;
-
-    const descriptionLength = document.getElementById('descriptionLength');
-    const descriptionWidth = document.getElementById('descriptionWidth');
-
-    descriptionLength.innerHTML = response.data.description.length;
-    descriptionWidth.innerHTML = response.data.description.width;
-
-    if (response.data.description.length > descriptionMaxLength) {
-        descriptionLength.classList.add('text-danger');
-    } else {
-        descriptionLength.classList.remove('text-danger');
-    }
-
-    if (response.data.description.width > descriptionMaxWidth) {
-        descriptionWidth.classList.add('text-danger');
-    } else {
-        descriptionWidth.classList.remove('text-danger');
+        element.classList.remove('text-danger');
     }
 }
 
@@ -116,7 +125,6 @@ function updateTable(url) {
         table.deleteRow(rowCount - 1);
     }
 }
-
 
 
 function metaAction(e) {

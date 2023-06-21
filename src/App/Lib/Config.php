@@ -15,6 +15,6 @@ class Config
            
         }
 
-        return !empty(self::$config[$key]) ? self::$config[$key] : $default;
+        return empty(self::$config[$key]) ? $default : self::$config[$key];
     }
 }

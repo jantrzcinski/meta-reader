@@ -27,9 +27,8 @@ class MetaAnalyzer
     private function calculateWidth(array $font, string $text): int
     {
         $path = Config::get('FONT_PATH');
-        list($left,, $right) = imagettfbbox($font[1], 0, $path . $font[3], $text);
-        $width = $right - $left;
-        return $width;
+        [$left,, $right] = imagettfbbox($font[1], 0, $path . $font[3], $text);
+        return $right - $left;
     }
 
     public function getCalculatedData(): array
@@ -40,12 +39,12 @@ class MetaAnalyzer
         return [
             'title' => [
                 'text' => $title,
-                'length' => mb_strlen($title),
+                'length' => mb_strlen((string) $title),
                 'width' => $this->titleWidth(),
             ],
             'description' => [
                 'text' => $description,
-                'length' => mb_strlen($description),
+                'length' => mb_strlen((string) $description),
                 'width' => $this->descriptionWidth(),
             ],
         ];

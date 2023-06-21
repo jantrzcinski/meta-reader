@@ -15,12 +15,12 @@ abstract class BaseController
 
         extract($variables);
 
-        include dirname(__FILE__) . '/../Views/' . $file . '.php';
+        include __DIR__ . '/../Views/' . $file . '.php';
     }
 
     public function sendJsonResponse(array $data): void
     {
         header('Content-Type: application/json');
-        echo json_encode($data);
+        echo json_encode($data, JSON_THROW_ON_ERROR);
     }
 }

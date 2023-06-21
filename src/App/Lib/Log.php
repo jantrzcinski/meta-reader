@@ -8,7 +8,7 @@ use App\Lib\Config;
 
 class Log
 {
-    private static $instance;
+    private static ?\App\Lib\Log $instance = null;
     protected static $file;
 
     public static function getInstance()

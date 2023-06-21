@@ -40,9 +40,9 @@ class Framework
         foreach (self::$map[$method] as $uri => $call) {
             //does the $url have a trailing slash? if yes, remove it
             //make sure the only string present is not the slash
-            if (substr($url, -1) === '/' && $uri != '/') {
+            if (str_ends_with((string) $url, '/') && $uri != '/') {
                 //remove the slash
-                $url = substr($url, 0, -1);
+                $url = substr((string) $url, 0, -1);
             }
             //if our $uri does not contain a pre-slash, we add it
             if ($url == $uri) {
